@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <title>Calculator</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        body {
+
+            background: #0d0d0f;
+
+            color: white;
+
+            font-family: Arial, sans-serif;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+
+            padding:
+                max(10px, env(safe-area-inset-top))
+                max(10px, env(safe-area-inset-right))
+                max(10px, env(safe-area-inset-bottom))
+                max(10px, env(safe-area-inset-left));
+
+        }
+
+
+        /* Main calculator */
+
+        .calculator {
+
+            width: min(100%, 430px);
+
+            height: min(
+                calc(100vh - 20px),
+                850px
+            );
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: clamp(10px, 1.8vh, 16px);
+
+        }
+
+
+        /* Display */
+
+        .display {
+
+            width: 100%;
+
+            flex: 0 0 clamp(
+                115px,
+                22vh,
+                190px
+            );
+
+            background: #171719;
+
+            border-radius: clamp(
+                22px,
+                5vw,
+                30px
+            );
+
+            padding:
+                clamp(18px, 4vw, 28px);
+
+            display: flex;
+
+            align-items: flex-end;
+
+            justify-content: flex-end;
+
+            overflow: hidden;
+
+            box-shadow:
+                inset 0 0 0 1px
+                rgba(255,255,255,0.025);
+
+        }
+
+
+        #display {
+
+            width: 100%;
+
+            background: transparent;
+
+            border: none;
+
+            outline: none;
+
+            color: #ffffff;
+
+            font-size: clamp(
+                40px,
+                11vw,
+                62px
+            );
+
+            font-weight: 400;
+
+            text-align: right;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+        }
+
+
+        /* Button area */
+
+        .buttons {
+
+            flex: 1;
+
+            min-height: 0;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            grid-template-rows:
+                repeat(5, 1fr);
+
+            gap: clamp(
+                7px,
+                1.5vh,
+                13px
+            );
+
+        }
+
+
+        /* Buttons */
+
+        button {
+
+            min-width: 0;
+
+            min-height: 0;
+
+            border: none;
+
+            border-radius: clamp(
+                18px,
+                5vw,
+                25px
+            );
+
+            background: #202023;
+
+            color: #ffffff;
+
+            font-size: clamp(
+                19px,
+                5.5vw,
+                26px
+            );
+
+            font-weight: 400;
+
+            cursor: pointer;
+
+            outline: none;
+
+            transition:
+                transform 0.12s ease,
+                background 0.12s ease,
+                box-shadow 0.12s ease;
+
+            box-shadow:
+                0 2px 5px
+                rgba(0,0,0,0.25);
+
+        }
+
+
+        /* Press animation */
+
+        button:active {
+
+            transform: scale(0.93);
+
+            background: #2d2d31;
+
+            box-shadow:
+
+                0 0 8px
+                rgba(255,255,255,0.22),
+
+                0 0 18px
+                rgba(255,255,255,0.10);
+
+        }
+
+
+        /* Clear */
+
+        .clear {
+
+            color: #ff6b6b;
+
+        }
+
+
+        .clear:active {
+
+            box-shadow:
+
+                0 0 10px
+                rgba(255,107,107,0.45),
+
+                0 0 22px
+                rgba(255,107,107,0.18);
+
+        }
+
+
+        /* Operators */
+
+        .operator {
+
+            background: #29292d;
+
+        }
+
+
+        .operator:active {
+
+            box-shadow:
+
+                0 0 10px
+                rgba(255,255,255,0.35),
+
+                0 0 22px
+                rgba(255,255,255,0.16);
+
+        }
+
+
+        /* Equal */
+
+        .equal {
+
+            background: #ffffff;
+
+            color: #000000;
+
+        }
+
+
+        .equal:active {
+
+            background: #eeeeee;
+
+            box-shadow:
+
+                0 0 12px
+                rgba(255,255,255,0.75),
+
+                0 0 28px
+                rgba(255,255,255,0.32);
+
+        }
+
+
+        /* Zero */
+
+        .zero {
+
+            grid-column: span 2;
+
+        }
+
+
+        /* Very short phones */
+
+        @media (max-height: 650px) {
+
+            body {
+                padding: 8px;
+            }
+
+
+            .calculator {
+
+                height:
+                    calc(100vh - 16px);
+
+                gap: 8px;
+
+            }
+
+
+            .display {
+
+                flex-basis: 100px;
+
+            }
+
+
+            .buttons {
+
+                gap: 7px;
+
+            }
+
+        }
+
+
+        /* Very narrow phones */
+
+        @media (max-width: 340px) {
+
+            .calculator {
+
+                gap: 8px;
+
+            }
+
+
+            .display {
+
+                flex-basis: 105px;
+
+                padding: 16px;
+
+            }
+
+
+            .buttons {
+
+                gap: 7px;
+
+            }
+
+        }
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="calculator">
+
+
+        <div class="display">
+
+            <input
+                id="display"
+                type="text"
+                value="0"
+                readonly
+                aria-label="Calculator display"
+            >
+
+        </div>
+
+
+        <div class="buttons">
+
+
+            <button
+                class="clear"
+                type="button"
+                data-action="clear"
+            >
+                AC
+            </button>
+
+
+            <button
+                type="button"
+                data-action="delete"
+            >
+                DEL
+            </button>
+
+
+            <button
+                class="operator"
+                type="button"
+                data-value="%"
+            >
+                %
+            </button>
+
+
+            <button
+                class="operator"
+                type="button"
+                data-value="/"
+            >
+                ÷
+            </button>
+
+
+            <button
+                type="button"
+                data-value="7"
+            >
+                7
+            </button>
+
+
+            <button
+                type="button"
+                data-value="8"
+            >
+                8
+            </button>
+
+
+            <button
+                type="button"
+                data-value="9"
+            >
+                9
+            </button>
+
+
+            <button
+                class="operator"
+                type="button"
+                data-value="*"
+            >
+                ×
+            </button>
+
+
+            <button
+                type="button"
+                data-value="4"
+            >
+                4
+            </button>
+
+
+            <button
+                type="button"
+                data-value="5"
+            >
+                5
+            </button>
+
+
+            <button
+                type="button"
+                data-value="6"
+            >
+                6
+            </button>
+
+
+            <button
+                class="operator"
+                type="button"
+                data-value="-"
+            >
+                −
+            </button>
+
+
+            <button
+                type="button"
+                data-value="1"
+            >
+                1
+            </button>
+
+
+            <button
+                type="button"
+                data-value="2"
+            >
+                2
+            </button>
+
+
+            <button
+                type="button"
+                data-value="3"
+            >
+                3
+            </button>
+
+
+            <button
+                class="operator"
+                type="button"
+                data-value="+"
+            >
+                +
+            </button>
+
+
+            <button
+                class="zero"
+                type="button"
+                data-value="0"
+            >
+                0
+            </button>
+
+
+            <button
+                type="button"
+                data-value="."
+            >
+                .
+            </button>
+
+
+            <button
+                class="equal"
+                type="button"
+                data-action="calculate"
+            >
+                =
+            </button>
+
+
+        </div>
+
+
+    </main>
+
+
+    <script>
+
+        const display =
+            document.getElementById("display");
+
+
+        let hasError = false;
+
+
+        function addValue(value) {
+
+            if (hasError) {
+
+                display.value = "0";
+
+                hasError = false;
+
+            }
+
+
+            if (value === ".") {
+
+                const parts =
+                    display.value.split(
+                        /[+\-*/%]/
+                    );
+
+                const currentNumber =
+                    parts[parts.length - 1];
+
+
+                if (
+                    currentNumber.includes(".")
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+
+            const last =
+                display.value.slice(-1);
+
+
+            const operators =
+                "+-*/%";
+
+
+            if (
+                operators.includes(value) &&
+                operators.includes(last)
+            ) {
+
+                display.value =
+                    display.value.slice(0, -1)
+                    + value;
+
+                return;
+
+            }
+
+
+            if (
+                display.value === "0" &&
+                value !== "."
+            ) {
+
+                display.value = value;
+
+            } else {
+
+                display.value += value;
+
+            }
+
+        }
+
+
+        function clearDisplay() {
+
+            display.value = "0";
+
+            hasError = false;
+
+        }
+
+
+        function deleteLast() {
+
+            if (hasError) {
+
+                clearDisplay();
+
+                return;
+
+            }
+
+
+            display.value =
+                display.value.slice(0, -1);
+
+
+            if (
+                display.value === "" ||
+                display.value === "-"
+            ) {
+
+                display.value = "0";
+
+            }
+
+        }
+
+
+        function calculate() {
+
+            try {
+
+                const expression =
+                    display.value;
+
+
+                const last =
+                    expression.slice(-1);
+
+
+                if (
+                    "+-*/%".includes(last)
+                ) {
+
+                    display.value = "Error";
+
+                    hasError = true;
+
+                    return;
+
+                }
+
+
+                if (
+                    !/^[0-9+\-*/%. ]+$/
+                        .test(expression)
+                ) {
+
+                    throw new Error();
+
+                }
+
+
+                if (
+                    /\/0+(?:\.0+)?(?:\D|$)/
+                        .test(expression)
+                ) {
+
+                    throw new Error();
+
+                }
+
+
+                const result =
+                    Function(
+                        '"use strict"; return (' +
+                        expression +
+                        ')'
+                    )();
+
+
+                if (
+                    !Number.isFinite(result)
+                ) {
+
+                    throw new Error();
+
+                }
+
+
+                display.value =
+                    Number.isInteger(result)
+                        ? result
+                        : Number(
+                            result.toFixed(10)
+                        );
+
+
+                hasError = false;
+
+
+            } catch {
+
+                display.value = "Error";
+
+                hasError = true;
+
+            }
+
+        }
+
+
+        document
+            .querySelector(".buttons")
+            .addEventListener(
+                "click",
+                function(event) {
+
+                    const button =
+                        event.target.closest(
+                            "button"
+                        );
+
+
+                    if (!button) {
+
+                        return;
+
+                    }
+
+
+                    const value =
+                        button.dataset.value;
+
+
+                    const action =
+                        button.dataset.action;
+
+
+                    if (action === "clear") {
+
+                        clearDisplay();
+
+                    }
+
+                    else if (
+                        action === "delete"
+                    ) {
+
+                        deleteLast();
+
+                    }
+
+                    else if (
+                        action === "calculate"
+                    ) {
+
+                        calculate();
+
+                    }
+
+                    else if (value) {
+
+                        addValue(value);
+
+                    }
+
+                }
+            );
+
+    </script>
+
+
+</body>
+
+</html>
